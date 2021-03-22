@@ -1,15 +1,17 @@
-name: Acquire activation file # 該Action的名稱，將顯示在Github Action的頁面UI
-on: [push] #觸發Action的條件，目前是只要有任何push就會觸發
-jobs: # 工作項目，可能平行處理。
-  activation: # 工作項目的變數名
-    name: Request manual activation file 🔑 # 工作項目的顯示名稱，將顯示在Action頁面UI上。
-    runs-on: ubuntu-latest # 運行的裝置
-    steps: # 步驟，將照順序跑
-        # Request manual activation file
-        - name: Unity - Activate
-          # You may pin to the exact commit or the version.
-          # uses: game-ci/unity-activate@cda570d7590fe63b7f718e6a052e170462c07361
-          uses: game-ci/unity-activate@v1.3
-          with:
-          # Version of unity to use for building the project.
-            unityVersion: 2019.4.18f1 # optional, default is 2019.2.11f1
+name: Acquire activation file
+on: [push]
+jobs:
+  activation:
+    name: Request manual activation file 🔑
+    runs-on: ubuntu-latest
+    steps:
+    # Request manual activation file
+    - name: Request manual activation file
+      id: getManualLicenseFile
+      uses: game-ci/unity-request-activation-file@v2
+    # Upload artifact (Unity_v20XX.X.XXXX.alf)
+    - name: Expose as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: ${{ steps.getManualLicenseFile.outputs.filePath }}
+        path: ${{ steps.getManualLicenseFile.outputs.filePath }}
